@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package greetserverstream;
+
+option go_package = "greetserverstreampb";
+
+message Greeting {
+  string first_name = 1;
+  string last_name = 2;
+}
+
+message GreetRequest { Greeting greeting = 1; }
+
+message GreetResponse { string result = 1; }
+
+service GreetService {
+  // Server Streaming
+  rpc GreetServerStream(GreetRequest) returns (stream GreetResponse);
+}
