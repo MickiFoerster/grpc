@@ -21,13 +21,13 @@ ca.key :
 	openssl genrsa -passout pass:$(PASSWORD_CA_KEY) -des3 -out $@ 2048
 
 ca.crt : ca.key
-	openssl req -passin pass:$(PASSWORD_CA_KEY) -new -x509 -config cert.conf -extensions 'req_ext' -days 365 -key $< -out $@ -subj "/CN=$(SERVER_CN)"
+	openssl req -passin pass:$(PASSWORD_CA_KEY) -new -x509 -days 365 -key $< -out $@ -subj "/CN=$(SERVER_CN)"
 
 server.key :
 	openssl genrsa -passout pass:$(PASSWORD_SERVER_KEY) -des3 -out $@ 2048
 
 server.csr : server.key
-	openssl req -passin pass:$(PASSWORD_SERVER_KEY) -new -key $< -out $@ -subj "/CN=$(SERVER_CN)"
+	openssl req -passin pass:$(PASSWORD_SERVER_KEY) -new -config cert.conf -extensions 'req_ext' -key $< -out $@ -subj "/CN=$(SERVER_CN)"
 
 server.crt : server.csr ca.crt ca.key
 	@echo "server signing request: $(word 1,$^)"
