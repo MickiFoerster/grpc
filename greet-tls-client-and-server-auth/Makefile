@@ -5,7 +5,11 @@ SERVER_CN=localhost
 
 .PRECIOUS: %.pb.go
 %.pb.go : %.proto
-	protoc --go_out=plugins=grpc:. $<
+	protoc --go_out=./ --go_opt=paths=import \
+		--go-grpc_out=./ --go-grpc_opt=paths=import $<
+	mkdir -p $(GOSRC)/grpc-generated || rm -f $@
+	cp -v *.pb.go $(GOSRC)/grpc-generated/ || rm -f $@
+	go install grpc-generated
 
 all : grpc_client grpc_server
 

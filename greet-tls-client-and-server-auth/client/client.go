@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	greettlspb "github.com/MickiFoerster/grpc/greet-tls"
+	greettlspb "github.com/MickiFoerster/grpc/greet-tls-client-and-server-auth"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
@@ -20,7 +20,7 @@ func main() {
 	}
 
 	opts := grpc.WithTransportCredentials(creds)
-	clientConn, err := grpc.Dial("localhost:50051", opts)
+	clientConn, err := grpc.Dial("localhost:55551", opts)
 	if err != nil {
 		log.Fatalf("Dial() failed: %v\n", err)
 	}

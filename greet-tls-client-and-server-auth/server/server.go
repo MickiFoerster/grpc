@@ -5,16 +5,18 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"log"
 	"net"
 
-	greettlspb "github.com/MickiFoerster/grpc/greet-tls"
+	greettlspb "github.com/MickiFoerster/grpc/greet-tls-client-and-server-auth"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
 
 type serviceServer struct {
+	greettlspb.UnimplementedGreetServiceServer
 }
 
 func (*serviceServer) Greet(ctx context.Context, req *greettlspb.GreetRequest) (*greettlspb.GreetResponse, error) {
@@ -30,7 +32,7 @@ func (*serviceServer) Greet(ctx context.Context, req *greettlspb.GreetRequest) (
 func main() {
 	fmt.Println("Go server starts ...")
 
-	listener, err := net.Listen("tcp", "0.0.0.0:50051")
+	listener, err := net.Listen("tcp", "0.0.0.0:55551")
 	if err != nil {
 		log.Fatalf("listen failed: %v\n", err)
 	}
@@ -50,4 +52,20 @@ func main() {
 	if err := server.Serve(listener); err != nil {
 		log.Fatalf("Serve() failed: %v\n", err)
 	}
+}
+
+func loadTLSCredentials() (credentials.TransportCredentials, error) {
+	// Load server's certificate and private key
+	serverCert, err := tls.LoadX509KeyPair("cert/server-cert.pem", "cert/server-key.pem")
+	if err != nil {
+		return nil, err
+	}
+
+	// Create the credentials and return it
+	config := &tls.Config{
+		Certificates: []tls.Certificate{serverCert},
+		ClientAuth:   tls.NoClientCert,
+	}
+
+	return credentials.NewTLS(config), nil
 }
