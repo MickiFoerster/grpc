@@ -56,7 +56,9 @@ func main() {
 
 func loadTLSCredentials() (credentials.TransportCredentials, error) {
 	// Load server's certificate and private key
-	serverCert, err := tls.LoadX509KeyPair("cert/server-cert.pem", "cert/server-key.pem")
+	serverCert, err := tls.LoadX509KeyPair(
+		"server.pem",
+		"server.key")
 	if err != nil {
 		return nil, err
 	}
