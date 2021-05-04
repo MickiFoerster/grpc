@@ -58,3 +58,35 @@ server.crt : server.csr ca.crt ca.key
 
 server.pem : server.key
 	openssl pkcs8 -topk8 -nocrypt -passin pass:$(PASSWORD_SERVER_KEY) -in $< -out $@
+
+client.key :
+	openssl genrsa -passout pass:$(PASSWORD_SERVER_KEY) -des3 -out $@ 2048
+
+client.csr : client.key
+	openssl req \
+		-new \
+		-nodes \
+		-passin pass:$(PASSWORD_SERVER_KEY) \
+		-key $< \
+		-out $@ \
+		-config cert.conf \
+		-extensions 'req_ext' 
+
+client.crt : client.csr ca.crt ca.key
+	@echo "client signing request: $(word 1,$^)"
+	@echo "CA certificate: $(word 2,$^)"
+	@echo "CA private key: $(word 3,$^)"
+	openssl x509 -req \
+		         -passin pass:$(PASSWORD_CA_KEY) \
+				 -days 365 \
+				 -in $(word 1, $^) \
+				 -CA $(word 2, $^) \
+				 -CAkey $(word 3, $^) \
+				 -set_serial 01 \
+				 -out $@  \
+				 -extensions req_ext \
+				 -extfile cert.conf
+
+client.pem : client.key
+	openssl pkcs8 -topk8 -nocrypt -passin pass:$(PASSWORD_SERVER_KEY) -in $< -out $@
+
