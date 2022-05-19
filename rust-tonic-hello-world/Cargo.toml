@@ -1,0 +1,20 @@
+[package]
+name = "hello-world"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "helloworld-server"
+path = "src/server.rs"
+
+[[bin]]
+name = "helloworld-client"
+path = "src/client.rs"
+
+[dependencies]
+prost = "0.10.3"
+tonic = { version = "0.7.2", features = ["tls"] }
+tokio = { version = "1.18.2", features = ["macros", "rt-multi-thread"] }
+
+[build-dependencies]
+tonic-build = "0.7.2"
